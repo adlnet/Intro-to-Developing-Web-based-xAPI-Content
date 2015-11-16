@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Guess the Number</title>
+    
+    <!-- jquery to support bootstrap and for general dom manipulation -->
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    
+    <!-- moment.js for date / time -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+    
+    <script src="xapiwrapper.min.js"></script>
+    <script>
+        var conf = {
+          "endpoint" : "https://lrs.adlnet.gov/xapi/",
+          "user" : "tom",
+          "password" : "1234",
+        };
+        ADL.XAPIWrapper.changeConfig(conf);
+        
+        var myXAPI = {
+            statement: {
+                actor: { 
+                    account: { 
+                        homePage: "http://adlnet.gov/accounts", 
+                        name: "creighton" 
+                    } 
+                },
+                object: { 
+                    id: "http://adlnet.gov/event/2015/xapibootcamp/guess-the-number",
+                    definition: {
+                        name: {"en-US": "Guess the Number Game"},
+                        description: {"en-US": "Simple guess the number game to demonstrate xAPI"},
+                        type: "http://adlnet.gov/event/2015/xapibootcamp/activity/type/game"
+                    }
+                },
+                context: {
+                    contextActivities: {
+                        "grouping": [
+                            {
+                                "id": "http://adlnet.gov/event/2015/xapibootcamp/dev/web"
+                            }
+                        ],
+                        "category": [
+                            {
+                                "id": "http://adlnet.gov/event/2015/xapibootcamp"
+                            }
+                        ]
+                    }
+                }
+            }
+        };
+        
+        myXAPI.getBase = function () {
+            return JSON.parse(JSON.stringify(this.statement));
+        };
+        
+        myXAPI.started = function (starttime) {
+            this.attemptGUID = ADL.ruuid();
+            var stmt = this.getBase();
+            stmt.verb = {
+                id: "http://adlnet.gov/event/2015/xapibootcamp/verb/started",
+                display: {"en-US": "started"}
+            };
+            stmt.timestamp = starttime.toISOString();
+            stmt.context.registration = this.attemptGUID;
+            ADL.XAPIWrapper.sendStatement(stmt, function (resp) {
+                console.log(resp.status + " - statement id: " + resp.response);
+            });
+        };
+        
+        myXAPI.ended = function (stats) {
+            var stmt = this.getBase();
+            stmt.verb = {
+                id: "http://adlnet.gov/event/2015/xapibootcamp/verb/ended",
+                display: {"en-US": "ended"}
+            };
+            stmt.timestamp = stats.endedAt.toISOString();
+            stmt.context.registration = this.attemptGUID;
+            stmt.result = {
+                extensions: {
+                    "http://adlnet.gov/event/2015/xapibootcamp/guess-the-number/ext/min": stats.min,
+                    "http://adlnet.gov/event/2015/xapibootcamp/guess-the-number/ext/max": stats.max,
+                    "http://adlnet.gov/event/2015/xapibootcamp/guess-the-number/ext/guesses": stats.guesses,
+                    "http://adlnet.gov/event/2015/xapibootcamp/guess-the-number/ext/number": stats.number,
+                    "http://adlnet.gov/event/2015/xapibootcamp/guess-the-number/ext/startedAt": stats.startedAt.toISOString(),
+                    "http://adlnet.gov/event/2015/xapibootcamp/guess-the-number/ext/endedAt": stats.endedAt.toISOString()
+                }
+            };
+            ADL.XAPIWrapper.sendStatement(stmt, function (resp) {
+                console.log(resp.status + " - statement id: " + resp.response);
+            });
+        };
+        
+        myXAPI.guessed = function (num) {
+            var stmt = this.getBase();
+            stmt.verb = {
+                id: "http://adlnet.gov/event/2015/xapibootcamp/verb/guessed",
+                display: {"en-US": "guessed"}
+            };
+            stmt.object = {
+                id: "http://adlnet.gov/event/2015/xapibootcamp/number",
+                definition: {
+                    name: {"en-US": "a number"},
+                    description: {"en-US": "Represents a number guessed in the guess a number game"},
+                    type: "http://adlnet.gov/event/2015/xapibootcamp/activity/type/number"
+                }
+            };
+            stmt.timestamp = (new Date()).toISOString();
+            stmt.context.registration = this.attemptGUID;
+            stmt.result = { response: num.toString() };
+            ADL.XAPIWrapper.sendStatement(stmt, function (resp) {
+                console.log(resp.status + " - statement id: " + resp.response);
+            });
+        };
+    </script>
+    
+    <script src="../lib/guess-number.js"></script>
+    
+    <script>
+        $(document).ready(function () {
+            // create game object
+            var thegame = new game(),
+                won = false,
+                help_messages = [{text: "Higher", class: "has-error"},
+                                 {text: "Winner!", class: "has-success"},
+                                 {text: "Lower", class: "has-error"}];
+            
+            // local functions
+            function startGame (event) {
+                $('#start-btn').attr("disabled",true);
+                $('#start-btn').removeClass('btn-warning').addClass('btn-default')
+                thegame.start();
+                resetInput();
+                hideStats();
+                $('#number-range').html(thegame.range);
+                $('#number-guess').attr('min', thegame.stats.min);
+                $('#number-guess').attr('max', thegame.stats.max);
+                $('#number-guess').removeAttr('readonly');
+                $('#number-guess').focus();
+                won = false;
+                myXAPI.started(thegame.stats.startedAt);
+            }
+            
+            function handleResult (result, number) {
+                var jq_help = $('#number-help');
+                jq_help.html(help_messages[result + 1].text + " (you guessed " + number + ")");
+                $('#number-group').addClass(help_messages[result + 1].class);
+                if (result == 0) {
+                    $('#number-guess').attr('readonly', 'true');
+                    $('#start-btn').attr("disabled",false);
+                    $('#start-btn').removeClass('btn-default').addClass('btn-warning');
+                    won = true;
+                    thegame.end();
+                    showStats();
+                    myXAPI.ended(thegame.stats);
+                    alert('You won');
+                }
+            }
+            
+            function resetInput () {
+                $('#number-group').removeClass(help_messages[0].class + " " + help_messages[1].class);
+                $('#number-guess').val('');
+                $('#number-help').html('');
+            }
+            
+            function showStats () {
+                var dur = moment.duration(thegame.stats.endedAt - thegame.stats.startedAt);
+                $('#stats-number').html(thegame.stats.number);
+                $('#stats-range').html(thegame.range);
+                $('#stats-guesses').html(thegame.stats.guesses.length + "  (" + thegame.stats.guesses + ")");
+                $('#stats-duration').html(dur.humanize() + "  (" + dur.toJSON() + ")");
+                $('#stats-row').show();
+            }
+            
+            function hideStats () {
+                $('#stats-row').hide();
+                $('#stats-number').html('');
+                $('#stats-range').html('');
+                $('#stats-guesses').html('');
+                $('#stats-duration').html('');
+            }
+            
+            // set events
+            $('#start-btn').on('click', startGame);
+            
+            $('#number-form').submit(function (event) {
+                var num = parseInt(event.target['number-guess'].value);
+                try {
+                    var res = thegame.evalGuess(num);
+                    myXAPI.guessed(num);
+                } catch (e) { 
+                    // if error, game is over, start again
+                    startGame();
+                    return false; 
+                }
+                if (won) return false;
+                resetInput();
+                handleResult(res, num);
+                return false;
+            });
+            
+            // auto run on doc ready
+            startGame();
+        });
+    </script>
+    
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <div class="container">
+        <h2>Guess the Number</h2>
+        <div class="row">
+            <div class="col-sm-6">
+                <form class="form" id="number-form">
+                    <div class="form-group" id="number-group">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label for="number-guess">Guess a number between <span id="number-range"></span></label>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="input-group">
+                                    <span class="input-group-btn">
+                                        <button id="guess-btn" class="btn btn-info" type="submit">Guess</button>
+                                    </span>
+                                    <input type="number" class="form-control" id="number-guess" aria-describedby="number-help" required>
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <span id="number-help" class="help-block"></span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <button id="start-btn" type="button" class="btn btn-warning">New Game</button>
+            </div>
+        </div>
+        <div class="row" id="stats-row" style="margin-top:2em;">
+            <div class="col-sm-6">
+                <table class="table table-condensed">
+                    <tbody>
+                        <tr>
+                            <th scope="row">Number</th>
+                            <td id="stats-number"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Guesses</th>
+                            <td id="stats-guesses"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Duration</th>
+                            <td id="stats-duration"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Range</th>
+                            <td id="stats-range"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
