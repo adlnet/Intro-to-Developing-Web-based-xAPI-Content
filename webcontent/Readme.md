@@ -309,3 +309,18 @@ you can try to get statements now.
   1.  Look at the [get statements](https://github.com/adlnet/xAPIWrapper#get-statements) section of the xAPI Wrapper, specifically [getting statements based on search parameters](https://github.com/adlnet/xAPIWrapper#get-statements-based-on-search-parameters).
   2.  Try to filter the statements based on actor and activity id (see [xAPI Get Statements](https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#723-getstatements) for the filter parameters)
   3.  Display the results on the game page
+
+## License
+   Copyright &copy;2016 Advanced Distributed Learning
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
