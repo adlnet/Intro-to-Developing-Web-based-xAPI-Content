@@ -1,10 +1,9 @@
 # Intro to Developing Web-based xAPI Content
   
-  
-  
-  >  This project was first presented at the ADL xAPI Bootcamp in Alexandria, VA in 2015. It is now being maintained here to allow others to access this workshop. If you are interested in try the code tutorial, refer to the steps in the [instructions in the webcontent Readme] (https://github.com/adlnet/Intro-to-Developing-Web-based-xAPI-Content/blob/master/webcontent/Readme.md).  
-  
-  
+This project was first presented at the ADL xAPI Bootcamp in Alexandria, VA in 2015. It is now being maintained here to allow others to access this workshop. If you are interested in try the code tutorial, refer to the steps in the 
+
+[instructions in the webcontent Readme] (https://github.com/adlnet/Intro-to-Developing-Web-based-xAPI-Content/blob/master/webcontent/Readme.md).  
+
 There will be code.
 
 #### Date/Time
