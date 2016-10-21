@@ -144,6 +144,7 @@ that was passed to ADL.launch.
   1.  At the end of the successful block of the callback function, add two
   function calls. One will create the additional functions for the myAPI object.
   The second function will call the startGame process.  
+
   ``` javascript  
   ...
       buildMyXAPI();
@@ -154,6 +155,7 @@ that was passed to ADL.launch.
   with ADL.launch(). This is typically because the content was not launched via
   xAPI Launch. For this demo we'll just keep it a pop up a message letting the user know
   they need to launch this through the xAPI Launch server.  
+
   ``` javascript  
   ...
     else {
@@ -164,6 +166,7 @@ that was passed to ADL.launch.
   ...
   ```  
   3. Finally the last part writes the endpoint on the game page and closes the ADL.launch function.  
+    
   ``` javascript  
   ...
         $('#endpoint').text(ADL.XAPIWrapper.lrs.endpoint);
