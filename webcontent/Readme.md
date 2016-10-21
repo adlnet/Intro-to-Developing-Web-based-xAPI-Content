@@ -64,8 +64,8 @@ create an object that will contain a base statement and some helper functions to
   <script>
   var myXAPI = {};
   ADL.launch(function(err, launchdata, xAPIWrapper) {
-  ...
   </script>
+  ...
   ```  
 
   2. xAPI Launch sends information (launch data) to the content, which the ADL.launch function sends to the callback. Using this information we can create a base
@@ -134,7 +134,7 @@ create an object that will contain a base statement and some helper functions to
               }
           };
  ...
-  ```
+  ```  
 
 ## Step 4 - Building the rest of the myXAPI object and callback function
 Additional functions are added to the myXAPI object to report when actions in
@@ -144,7 +144,7 @@ that was passed to ADL.launch.
   1.  At the end of the successful block of the callback function, add two
   function calls. One will create the additional functions for the myAPI object.
   The second function will call the startGame process.  
-  ```javascript
+  ``` javascript  
   ...
       buildMyXAPI();
       startGame();
@@ -154,7 +154,7 @@ that was passed to ADL.launch.
   with ADL.launch(). This is typically because the content was not launched via
   xAPI Launch. For this demo we'll just keep it a pop up a message letting the user know
   they need to launch this through the xAPI Launch server.  
-  ```javascript
+  ``` javascript  
   ...
     else {
         alert("this can only be used by an xapi launch server");
@@ -164,7 +164,7 @@ that was passed to ADL.launch.
   ...
   ```  
   3. Finally the last part writes the endpoint on the game page and closes the ADL.launch function.  
-  ```javascript  
+  ``` javascript  
   ...
         $('#endpoint').text(ADL.XAPIWrapper.lrs.endpoint);
     }, true);
