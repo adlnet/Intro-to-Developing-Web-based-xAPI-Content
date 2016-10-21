@@ -29,7 +29,7 @@ The first step is to download the xAPI Wrapper file. The easiest way is to downl
   ```
 
 ## Step 2 - Configure the xAPI Wrapper  
-Next you have to [configure the xAPI Wrapper](https://github.com/adlnet/xAPIWrapper#xapi-launch-support). By default, the xAPI Wrapper is configured to communicate with an lrs at localhost. We want to
+Next you have to [configure the xAPI Wrapper](https://github.com/adlnet/xAPIWrapper#xapi-launch-support). By default, the xAPI Wrapper is configured to communicate with an LRS at localhost. We want to
 have xAPI Launch tell the content what configuration to use, instead of hardcoding
 the LRS and authentication details. By calling ADL.launch, the xAPIWrapper will
 do the handshake with xAPI Launch and pass a configured object to the callback.   
@@ -150,39 +150,35 @@ that was passed to ADL.launch.
       startGame();
   ...
   ```  
-  2.  Add the else clause which will happen in the case where there was an error
+  2.  The else clause handle what happens in the case where there was an error
   with ADL.launch(). This is typically because the content was not launched via
-  xAPI Launch. For this demo we'll just pop up a message letting the user know
+  xAPI Launch. For this demo we'll just keep it a pop up a message letting the user know
   they need to launch this through the xAPI Launch server.  
   ```javascript
   ...
-      buildMyXAPI();
-      startGame();
+    else {
+        alert("this can only be used by an xapi launch server");
 
-      console.log("--- content launched via xAPI Launch ---\n", ADL.XAPIWrapper.lrs, "\n", launchdata);
-    } else {
-      alert("this can only be used by an xapi launch server");
-      console.log("--- content not launched ---\n", ADL.XAPIWrapper.lrs);
+        console.log("--- content not launched ---\n", ADL.XAPIWrapper.lrs);
     }
   ...
   ```  
-  3. Finally we write the endpoint on the game page and close the ADL.launch function.  
+  3. Finally the last part writes the endpoint on the game page and closes the ADL.launch function.  
   ```javascript  
   ...
-          console.log("--- content not launched ---\n", ADL.XAPIWrapper.lrs);
-        }
         $('#endpoint').text(ADL.XAPIWrapper.lrs.endpoint);
     }, true);
+    </script>
   ...
   ```
 
 
-## Step 4 - Adding Helper Methods to myXAPI
+## Step 5 - Adding Helper Methods to myXAPI
 We want to report 3 things to the LRS: When someone starts a game, when someone finishes a game, and when someone makes
 a guess. Since there are some things that need added to, or changed in the base statement, it would be nice to add methods
 to the myXAPI object to centralize those changes.  
   1.  Create a function called buildMyXAPI() after the end of the ADL.launch().  
-  ```javascript  
+  ``` javascript  
   function buildMyXAPI() {
 
   }
@@ -274,7 +270,7 @@ to the myXAPI object to centralize those changes.
   };
   ```
 
-## Step 5 - Using myXAPI
+## Step 6 - Using myXAPI
 Now that everything is set up, it's time to call those helper functions during the game.  
   1.  Call `started` at the end of the `startGame` function in `game.html`.
   ``` javascript
@@ -333,7 +329,7 @@ Now that everything is set up, it's time to call those helper functions during t
   });
   ```  
 
-## Step 6 - Try the game
+## Step 7 - Try the game
 The game should report your attempts to the ADL LRS [view here](http://adlnet.github.io/xapi-statement-viewer/).
 
 ## Bonus Challenges
