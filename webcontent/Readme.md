@@ -54,7 +54,7 @@ do the handshake with xAPI Launch and pass a configured object to the callback.
   ```  
 
 ## Step 3 - Creating myXAPI
-The xAPIWrapper was created to simplify connecting to and communicating with an LRS. This means the work of creating a
+The xAPIWrapper was specifically created to simplify connecting to and communicating with an LRS. This means the work of creating a
 statement - generating the JSON properly and setting the correct values - is up to the developer. In this step you will
 create an object that will contain a base statement and some helper functions to simplify sending xAPI statements.  
 
