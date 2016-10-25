@@ -56,19 +56,22 @@ do the handshake with xAPI Launch and pass a configured object to the callback.
 ## Step 3 - Creating myXAPI
 The xAPIWrapper was specifically created to simplify connecting to and communicating with an LRS. This means the work of creating a
 statement - generating the JSON properly and setting the correct values - is up to the developer. In this step you will
-create an object that will contain a base statement and some helper functions to simplify sending xAPI statements.  
+create a `myXAPI` object that will contain a base statement and some helper functions to simplify sending xAPI statements.  
 
   1. Create myXAPI with Base Statement just before `ADL.launch(function(err, launchdata, xAPIWrapper) {`  
   ``` javascript
   ...
   <script>
+  
   var myXAPI = {};
+  
   ADL.launch(function(err, launchdata, xAPIWrapper) {
-  </script>
   ...
+  </script>
   ```  
 
-  2. xAPI Launch sends information (launch data) to the content, which the ADL.launch function sends to the callback. Using this information we can create a base
+  2. xAPI Launch sends information (launch data) to the content, which the ADL.launch function sends to the callback. 
+  Using this information we can create a base
   statement that we can modify for the started, ended and guessed statements. The
   launchdata.customData object contains content that can be configured in the
   xAPI Launch server, allowing us to enter a base URI we can use for all places
@@ -149,12 +152,14 @@ that was passed to ADL.launch.
   ...
       buildMyXAPI();
       startGame();
+      
+      $('#endpoint').text(ADL.XAPIWrapper.lrs.endpoint);
   ...
   ```  
-  2.  The else clause handle what happens in the case where there was an error
+  2.  The else clause handles what happens in the case where there was an error
   with ADL.launch(). This is typically because the content was not launched via
   xAPI Launch. For this demo we'll just keep it a pop up a message letting the user know
-  they need to launch this through the xAPI Launch server.  
+  they need to launch this through the xAPI Launch server. 
 
   ``` javascript  
   ...
@@ -190,10 +195,11 @@ to the myXAPI object to centralize those changes.
   2.  Before we add the 3 functions, add one that will make a copy of the base statement, so when those 3 functions
   start changing values, it doesn't change the base statement.  
   ``` javascript
-  // right after all of the var myXAPI..
+  ...
   myXAPI.getBase = function () {
     return JSON.parse(JSON.stringify(this.statement));
   };
+  ...
   ```  
 
   3.  Next add `started`. It will accept the `starttime` so that the statement and the game stats are in sync. It will set the
@@ -332,8 +338,24 @@ Now that everything is set up, it's time to call those helper functions during t
   });
   ```  
 
-## Step 7 - Try the game
-The game should report your attempts to the ADL LRS [view here](http://adlnet.github.io/xapi-statement-viewer/).
+## Step 7 - Remove startGame  
+The last line of the game script is `startGame();`. This is no longer necessary becuase we call it in the launch script now. Remove it so we don't call startGame before we build the myXAPI object.  
+
+## Step 8 - Upload the game  
+Launch doesn't require the game to be uploaded. This step is done as a convenience so we don't have to host our game on another server.  
+  
+1. Copy `cmi5.xml` from `webcontent/final/packaged/` to `webcontent/`. xAPI Launch has limited support of cmi5's package specification to allow us to package up our game and import on the server. The xml file is already set up, no edits are needed.  
+2. Zip cmi5.xml, game.html, lib/, and xapiwrapper.min.js. Make sure not to zip the containing folder (webcontent), just the files and lib/ folder.  
+3. On the xAPI Launch server, login and under the Apps drop down select Upload App. Choose your zip and upload.  
+
+## Step 9 - Configure the App  
+Before launching our game, we need to configure the launch settings to include our base URI so it can be passed to the game during the launch process.  
+1. Select the '...' button beside 'Launch' and choose 'Edit'.  
+2. Add `http://adlnet.gov/event/xapiworkshop/<<name>>` in the 'Custom Data' field.  
+3. Change 'Launch Type' to 'Popup'.
+
+## Step 10 - Try the game
+Launch the game! The game should report your attempts to the ADL LRS [view here](http://adlnet.github.io/xapi-statement-viewer/).
 
 ## Bonus Challenges
 If you have extra time and would like to try out more ...  
