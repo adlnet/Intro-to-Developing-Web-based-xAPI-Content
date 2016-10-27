@@ -11,10 +11,8 @@ LRS easier. Although this is a small tutorial it shows you how to:
   5.  use registration and context activities to group statements, using xAPI Launch information.
 
 ## Step 1 - Include the xAPI Wrapper in Game.html  
-The first step is to download the xAPI Wrapper file. The easiest way is to download the minified version on GitHub.  
-  1.  Download the latest [xapiwrapper.min.js release](https://github.com/adlnet/xAPIWrapper/releases/tag/v1.10.0)
-  2.  Save `xapiwrapper.min.js` in the webcontent folder with `game.html` (You can save it anywhere you wish, just change the source link accordingly)
-  3.  Add a `<script>` tag in the `<body>` of the `game.html` to include the xAPI Wrapper. (right below the game `<script>` tag)
+The first step is to include the xAPIWrapper in the game HTML. The xAPIWrapper is included in the project for your convenience. For reference, the xAPIWrapper project is at https://github.com/adlnet/xAPIWrapper.  
+  1.  Add a `<script>` tag in the `<body>` of the `game.html` to include the xAPI Wrapper. (right below the game `<script>` tag)
   ``` html
   ...
       handleResult(res, num);
@@ -22,7 +20,7 @@ The first step is to download the xAPI Wrapper file. The easiest way is to downl
     });
     </script>
 
-    <script src="xapiwrapper.min.js"></script>
+    <script src="./lib/xapiwrapper.min.js"></script>
     <script>
     </script>
     ...
@@ -35,7 +33,7 @@ the LRS and authentication details. By calling ADL.launch, the xAPIWrapper will
 do the handshake with xAPI Launch and pass a configured object to the callback.   
   ``` html
   ...
-  <script src="xapiwrapper.min.js"></script>
+  <script src="./lib/xapiwrapper.min.js"></script>
   <script>
   ADL.launch(function(err, launchdata, xAPIWrapper) {
       if (!err) {
