@@ -11,7 +11,7 @@ LRS easier. Although this is a small tutorial it shows you how to:
   5.  use registration and context activities to group statements, using xAPI Launch information.
 
 ## Step 1 - Include the xAPI Wrapper in Game.html  
-The first step is to include the xAPIWrapper in the game HTML. The xAPIWrapper is included in the project for your convenience. For reference, the xAPIWrapper project is at https://github.com/adlnet/xAPIWrapper.  
+The first step is to include the xAPIWrapper in the game HTML. The xAPIWrapper is included in the `lib` folder of the project for your convenience. For reference, the xAPIWrapper project is at https://github.com/adlnet/xAPIWrapper.  
   1.  Add a `<script>` tag in the `<body>` of the `game.html` to include the xAPI Wrapper. (right below the game `<script>` tag)
   ``` html
   ...
