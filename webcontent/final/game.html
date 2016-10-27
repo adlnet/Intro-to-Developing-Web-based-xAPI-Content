@@ -80,182 +80,143 @@
                 </table>
             </div>
         </div>
-        <div class="row" id="stats-row" style="margin-top:2em;">
-            <div class="col-sm-6">
-                <p><span id="endpoint"></span></p>
-            </div>
-        </div>
     </div>
-
     <script src="../lib/guess-number.js"></script>
 
     <script>
-            // create game object
-            var thegame = new game(),
-                won = false,
-                help_messages = [{text: "Higher", class: "has-error"},
-                                 {text: "Winner!", class: "has-success"},
-                                 {text: "Lower", class: "has-error"}];
+        var thegame = new game(),
+            won = false,
+            help_messages = [{text: "Higher", class: "has-error"},
+                             {text: "Winner!", class: "has-success"},
+                             {text: "Lower", class: "has-error"}];
 
-            // local functions
-            function startGame (event) {
-                $('#start-btn').attr("disabled",true);
-                $('#start-btn').removeClass('btn-warning').addClass('btn-default')
-                thegame.start();
-                resetInput();
-                hideStats();
-                $('#number-range').html(thegame.range);
-                $('#number-guess').attr('min', thegame.stats.min);
-                $('#number-guess').attr('max', thegame.stats.max);
-                $('#number-guess').removeAttr('readonly');
-                $('#number-guess').focus();
-                won = false;
-                myXAPI.started(thegame.stats.startedAt);
+        // local functions
+        function startGame (event) {
+            $('#start-btn').attr("disabled",true);
+            $('#start-btn').removeClass('btn-warning').addClass('btn-default')
+            thegame.start();
+            resetInput();
+            hideStats();
+            $('#number-range').html(thegame.range);
+            $('#number-guess').attr('min', thegame.stats.min);
+            $('#number-guess').attr('max', thegame.stats.max);
+            $('#number-guess').removeAttr('readonly');
+            $('#number-guess').focus();
+            won = false;
+            myXAPI.started(thegame.stats.startedAt);
+        }
+
+        function handleResult (result, number) {
+            var jq_help = $('#number-help');
+            jq_help.html(help_messages[result + 1].text + " (you guessed " + number + ")");
+            $('#number-group').addClass(help_messages[result + 1].class);
+            if (result == 0) {
+                $('#number-guess').attr('readonly', 'true');
+                $('#start-btn').attr("disabled",false);
+                $('#start-btn').removeClass('btn-default').addClass('btn-warning');
+                won = true;
+                thegame.end();
+                showStats();
+                myXAPI.ended(thegame.stats);
+                alert('You won');
             }
+        }
 
-            function handleResult (result, number) {
-                var jq_help = $('#number-help');
-                jq_help.html(help_messages[result + 1].text + " (you guessed " + number + ")");
-                $('#number-group').addClass(help_messages[result + 1].class);
-                if (result == 0) {
-                    $('#number-guess').attr('readonly', 'true');
-                    $('#start-btn').attr("disabled",false);
-                    $('#start-btn').removeClass('btn-default').addClass('btn-warning');
-                    won = true;
-                    thegame.end();
-                    showStats();
-                    myXAPI.ended(thegame.stats);
-                    alert('You won');
-                }
-            }
+        function resetInput () {
+            $('#number-group').removeClass(help_messages[0].class + " " + help_messages[1].class);
+            $('#number-guess').val('');
+            $('#number-help').html('');
+        }
 
-            function resetInput () {
-                $('#number-group').removeClass(help_messages[0].class + " " + help_messages[1].class);
-                $('#number-guess').val('');
-                $('#number-help').html('');
-            }
+        function showStats () {
+            var dur = moment.duration(thegame.stats.endedAt - thegame.stats.startedAt);
+            $('#stats-number').html(thegame.stats.number);
+            $('#stats-range').html(thegame.range);
+            $('#stats-guesses').html(thegame.stats.guesses.length + "  (" + thegame.stats.guesses + ")");
+            $('#stats-duration').html(dur.humanize() + "  (" + dur.toJSON() + ")");
+            $('#stats-row').show();
+        }
 
-            function showStats () {
-                var dur = moment.duration(thegame.stats.endedAt - thegame.stats.startedAt);
-                $('#stats-number').html(thegame.stats.number);
-                $('#stats-range').html(thegame.range);
-                $('#stats-guesses').html(thegame.stats.guesses.length + "  (" + thegame.stats.guesses + ")");
-                $('#stats-duration').html(dur.humanize() + "  (" + dur.toJSON() + ")");
-                $('#stats-row').show();
-            }
+        function hideStats () {
+            $('#stats-row').hide();
+            $('#stats-number').html('');
+            $('#stats-range').html('');
+            $('#stats-guesses').html('');
+            $('#stats-duration').html('');
+        }
 
-            function hideStats () {
-                $('#stats-row').hide();
-                $('#stats-number').html('');
-                $('#stats-range').html('');
-                $('#stats-guesses').html('');
-                $('#stats-duration').html('');
-            }
+        // set events
+        $('#start-btn').on('click', startGame);
 
-            // set events
-            $('#start-btn').on('click', startGame);
-
-            $('#number-form').submit(function (event) {
-                var num = parseInt(event.target['number-guess'].value);
-                try {
-                    var res = thegame.evalGuess(num);
-                    myXAPI.guessed(num);
-                } catch (e) {
-                    // if error, game is over, start again
-                    startGame();
-                    return false;
-                }
-                if (won) return false;
-                resetInput();
-                handleResult(res, num);
+        $('#number-form').submit(function (event) {
+            var num = parseInt(event.target['number-guess'].value);
+            try {
+                var res = thegame.evalGuess(num);
+                myXAPI.guessed(num);
+            } catch (e) {
+                // if error, game is over, start again
+                startGame();
                 return false;
-            });
+            }
+            if (won) return false;
+            resetInput();
+            handleResult(res, num);
+            return false;
+        });
     </script>
 
-    <script src="xapiwrapper.min.js"></script>
+    <script src="./lib/xapiwrapper.min.js"></script>
+
     <script>
         var myXAPI = {};
+
         ADL.launch(function(err, launchdata, xAPIWrapper) {
             if (!err) {
                 ADL.XAPIWrapper = xAPIWrapper;
-
-                // set up myXAPI
                 myXAPI.baseuri = launchdata.customData.content;
-                myXAPI.statement = {
-                    actor: launchdata.actor,
-                    object: {
-                        id: myXAPI.baseuri + "/guess-the-number",
-                        definition: {
-                            name: {"en-US": "Guess the Number Game"},
-                            description: {"en-US": "Simple guess the number game to demonstrate xAPI"},
-                            type: "http://activitystrea.ms/schema/1.0/game"
-                        }
-                    },
-                    context: {
-                        contextActivities: {
-                            "grouping": [
-                                {
-                                    "id": myXAPI.baseuri + "/dev/web"
-                                }
-                            ],
-                            "category": [
-                                {
-                                    "id": myXAPI.baseuri
-                                }
-                            ]
-                        }
-                    }
-                };
-
-                buildMyXAPI();
-                startGame();
 
                 console.log("--- content launched via xAPI Launch ---\n", ADL.XAPIWrapper.lrs, "\n", launchdata);
             } else {
-                alert("this can only be used by an xapi launch server");
-                // here's how you'd statically configure the XAPIWrapper
-                // var conf = {
-                //     "endpoint" : "https://lrs.adlnet.gov/xapi/",
-                //     "user" : "tom",
-                //     "password" : "1234",
-                // };
-                // ADL.XAPIWrapper.changeConfig(conf);
-
-                // myXAPI.baseuri = "http://adlnet.gov/event/xapiworkshop";
-                // myxAPI.statement = {
-                //     actor: {
-                //         account: {
-                //             homePage: "http://adlnet.gov/accounts",
-                //             name: "creighton"
-                //         }
-                //     },
-                //     object: {
-                //         id: myXAPI.baseuri + "/guess-the-number",
-                //         definition: {
-                //             name: {"en-US": "Guess the Number Game"},
-                //             description: {"en-US": "Simple guess the number game to demonstrate xAPI"},
-                //             type: "http://activitystrea.ms/schema/1.0/game"
-                //         }
-                //     },
-                //     context: {
-                //         contextActivities: {
-                //             "grouping": [
-                //                 {
-                //                     "id": myXAPI.baseuri + "/dev/web"
-                //                 }
-                //             ],
-                //             "category": [
-                //                 {
-                //                     "id": myXAPI.baseuri
-                //                 }
-                //             ]
-                //         }
-                //     }
-                // };
-                // buildMyXAPI();
-                // startGame();
+                alert("This was not initialized via xAPI Launch. Defaulting to hard-coded credentials");
+                ADL.XAPIWrapper.changeConfig({
+                    "endpoint": "https://lrs.adlnet.gov/xapi/",
+                    "user": "xapi-workshop",
+                    "password": "password1234"
+                });
+                myXAPI.baseuri = "http://adlnet.gov/event/xapiworkshop/non-launch";
+                launchdata = {actor: {account:{homePage:"http://anon.ymo.us/server", name: "unknown-user"}, name: "unknown"}};
                 console.log("--- content not launched ---\n", ADL.XAPIWrapper.lrs);
             }
+
+            myXAPI.statement = {
+                actor: launchdata.actor,
+                object: {
+                    id: myXAPI.baseuri + "/guess-the-number",
+                    definition: {
+                        name: {"en-US": "Guess the Number Game"},
+                        description: {"en-US": "Simple guess the number game to demonstrate xAPI"},
+                        type: "http://activitystrea.ms/schema/1.0/game"
+                    }
+                },
+                context: {
+                    contextActivities: {
+                        "grouping": [
+                            {
+                                "id": myXAPI.baseuri + "/dev/web"
+                            }
+                        ],
+                        "category": [
+                            {
+                                "id": myXAPI.baseuri
+                            }
+                        ]
+                    }
+                }
+            };
+
+            buildMyXAPI();
+            startGame();
+
             $('#endpoint').text(ADL.XAPIWrapper.lrs.endpoint);
         }, true);
 
@@ -264,6 +225,7 @@
                 return JSON.parse(JSON.stringify(this.statement));
             };
 
+            // after getBase
             myXAPI.started = function (starttime) {
                 this.attemptGUID = ADL.ruuid();
                 var stmt = this.getBase();
@@ -278,6 +240,7 @@
                 });
             };
 
+            // after started
             myXAPI.ended = function (stats) {
                 var stmt = this.getBase();
                 stmt.verb = {
@@ -300,6 +263,7 @@
                 });
             };
 
+            // after ended
             myXAPI.guessed = function (num) {
                 var stmt = this.getBase();
                 stmt.verb = {
@@ -323,5 +287,6 @@
             };
         }
     </script>
+
 </body>
 </html>
