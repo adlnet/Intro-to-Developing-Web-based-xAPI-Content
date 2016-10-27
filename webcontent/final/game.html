@@ -188,8 +188,15 @@
                 console.log("--- content not launched ---\n", ADL.XAPIWrapper.lrs);
             }
 
+            buildMyXAPI(launchdata.actor);
+            startGame();
+
+            $('#endpoint').text(ADL.XAPIWrapper.lrs.endpoint);
+        }, true);
+
+        function buildMyXAPI(myactor) {
             myXAPI.statement = {
-                actor: launchdata.actor,
+                actor: myactor,
                 object: {
                     id: myXAPI.baseuri + "/guess-the-number",
                     definition: {
@@ -214,13 +221,6 @@
                 }
             };
 
-            buildMyXAPI();
-            startGame();
-
-            $('#endpoint').text(ADL.XAPIWrapper.lrs.endpoint);
-        }, true);
-
-        function buildMyXAPI() {
             myXAPI.getBase = function () {
                 return JSON.parse(JSON.stringify(this.statement));
             };
