@@ -68,129 +68,126 @@ create a `myXAPI` object that will contain a base statement and some helper func
   </script>
   ```  
 
-  2. xAPI Launch sends information (launch data) to the content, which the ADL.launch function sends to the callback. 
-  Using this information we can create a base
-  statement that we can modify for the started, ended and guessed statements. The
-  launchdata.customData object contains content that can be configured in the
+## Step 4 - Initializing the content based on xAPI Launch data  
+The xAPI Wrapper has xAPI Launch functionality built in. By calling ADL.launch() with a callback function, we are able 
+to get a configured xAPIWrapper and additional launch data from the launch server.  
+
+  1. xAPI Launch sends information (launch data) to the content, which the ADL.launch function sends to the callback. 
+  The launchdata.customData object contains content that can be configured in the
   xAPI Launch server, allowing us to enter a base URI we can use for all places
-  that need a URI.   
+  that need a URI. And the xAPIWrapper parameter holds a new xAPIWrapper instance that is configured with settings 
+  from the launch server. Set the original `ADL.XAPIWrapper` to the configured one from the launch() method. And save the `launchdata.customData.content` value to a baseuri property on `myXAPI`. (we will configure this value on the launch server)  
   ``` javascript
   ...
   var myXAPI = {};
   ADL.launch(function(err, launchdata, xAPIWrapper) {
       if (!err) {
           ADL.XAPIWrapper = xAPIWrapper;
-
-          // set up myXAPI
           myXAPI.baseuri = launchdata.customData.content;
-          myXAPI.statement = {
-              actor: launchdata.actor,
-              object: {
-                  id: myXAPI.baseuri + "/guess-the-number",
-                  definition: {
-                      name: {"en-US": "Guess the Number Game"},
-                      description: {"en-US": "Simple guess the number game to demonstrate xAPI"},
-                      type: "http://activitystrea.ms/schema/1.0/game"
-                  }
-              }
-          };
       }
       ...
   ```
+  
+## Step 5 - Adding the else block
+The else block is the case when an error occurred trying to talk to the launch server - typically this is 
+because the content wasn't launched by the launch server. In this example we default back to hard coded values, however 
+additional processing or error handling could occur here.  
 
-  3. Add context activity grouping and category activities to the base statement. These are used to tag these statements
-  as being part of this xAPI Workshop, and part of the web development session. (We can use those values later to retrieve statements from the LRS)  
+  1. Alert the user that this wasn't initialized through xAPI Launch and that we'll use default values.  
+  ``` javascript  
+  ...
+  } else {
+     alert("This was not initialized via xAPI Launch. Defaulting to hard-coded credentials.");
+  }
+  ```  
+  2. Change the configuration of the `ADL.XAPIWrapper` to hard-coded values.  
+  ``` javascript
+    ...
+    alert("This was not initialized via xAPI Launch. Defaulting to hard-coded credentials.");
+    ADL.XAPIWrapper.changeConfig({
+        "endpoint": "https://lrs.adlnet.gov/xapi/",
+        "user": "xapi-workshop",
+        "password": "password1234"
+    });
+  ```  
+  3. Set the baseuri value and the launchdata actor information.  
   ``` javascript
   ...
-  var myXAPI = {};
-  ADL.launch(function(err, launchdata, xAPIWrapper) {
-      if (!err) {
-          ADL.XAPIWrapper = xAPIWrapper;
+     myXAPI.baseuri = "http://adlnet.gov/event/xapiworkshop/non-launch";
+     launchdata = {actor: {account:{homePage:"http://anon.ymo.us/server", name: "unknown-user"}, name: "unknown"}};
+  }
+  ```
 
-          // set up myXAPI
-          myXAPI.baseuri = launchdata.customData.content;
-          myXAPI.statement = {
-              actor: launchdata.actor,
-              object: {
-                  id: myXAPI.baseuri + "/guess-the-number",
-                  definition: {
-                      name: {"en-US": "Guess the Number Game"},
-                      description: {"en-US": "Simple guess the number game to demonstrate xAPI"},
-                      type: "http://activitystrea.ms/schema/1.0/game"
-                  }
-              },
-              context: {
-                  contextActivities: {
-                      "grouping": [
-                          {
-                              "id": myXAPI.baseuri + "/dev/web"
-                          }
-                      ],
-                      "category": [
-                          {
-                              "id": myXAPI.baseuri
-                          }
-                      ]
-                  }
-              }
-          };
- ...
-  ```  
-
-## Step 4 - Building the rest of the myXAPI object and callback function
-Additional functions are added to the myXAPI object to report when actions in
+  
+## Step 6 - Building the rest of the myXAPI object and callback function
+We add functions and a base statement to the myXAPI object to report when actions in
 the game take place. The following steps will go into the details of those
-functions. But before we get to them, let's finish this callback function
-that was passed to ADL.launch.  
-  1.  At the end of the successful block of the callback function, add two
-  function calls. One will create the additional functions for the myAPI object.
+functions.   
+
+  1.  At the end of the callback function, add two
+  function calls. `buildMyXAPI` takes the actor sent from the launch server 
+  and will create a base statement and the additional functions for the myAPI object.
   The second function will call the startGame process.  
 
   ``` javascript  
   ...
-      buildMyXAPI();
-      startGame();
-      
-      $('#endpoint').text(ADL.XAPIWrapper.lrs.endpoint);
+        buildMyXAPI(launchdata.actor);
+        startGame();
   ...
-  ```  
-  2.  The else clause handles what happens in the case where there was an error
-  with ADL.launch(). This is typically because the content was not launched via
-  xAPI Launch. For this demo we'll just keep it a pop up a message letting the user know
-  they need to launch this through the xAPI Launch server. 
-
-  ``` javascript  
-  ...
-    else {
-        alert("this can only be used by an xapi launch server");
-
-        console.log("--- content not launched ---\n", ADL.XAPIWrapper.lrs);
-    }
-  ...
-  ```  
-  3. Finally the last part writes the endpoint on the game page and closes the ADL.launch function.  
+  ```   
+  2. The last part writes the endpoint on the game page and closes the ADL.launch function.  
     
   ``` javascript  
   ...
         $('#endpoint').text(ADL.XAPIWrapper.lrs.endpoint);
     }, true);
-    </script>
   ...
   ```
 
 
-## Step 5 - Adding Helper Methods to myXAPI
+## Step 7 - Adding Helper Methods to myXAPI
 We want to report 3 things to the LRS: When someone starts a game, when someone finishes a game, and when someone makes
 a guess. Since there are some things that need added to, or changed in the base statement, it would be nice to add methods
 to the myXAPI object to centralize those changes.  
+
   1.  Create a function called buildMyXAPI() after the end of the ADL.launch().  
   ``` javascript  
-  function buildMyXAPI() {
+  function buildMyXAPI(myactor) {
 
   }
   ```  
+  
+  2.  In the `buildMyXAPI` function first create a base statement with parts of a statement that don't change much. The `actor` property is set to the value we got from the launch server. The `object` is created with information about the game. We use `myXAPI.baseuri` that was initialized by the launch server to create the IRIs used within the content. And the `context` property is populated with `contextActivities` that allow us to tag these statements as coming from this xAPI Workshop. (Later we can use these values to retrieve only the statements from this workshop)  
+  ``` javascript
+  ...
+  myXAPI.statement = {
+        actor: myactor,
+        object: {
+            id: myXAPI.baseuri + "/guess-the-number",
+            definition: {
+                name: {"en-US": "Guess the Number Game"},
+                description: {"en-US": "Simple guess the number game to demonstrate xAPI"},
+                type: "http://activitystrea.ms/schema/1.0/game"
+            }
+        },
+        context: {
+            contextActivities: {
+                "grouping": [
+                    {
+                        "id": myXAPI.baseuri + "/dev/web"
+                    }
+                ],
+                "category": [
+                    {
+                        "id": myXAPI.baseuri
+                    }
+                ]
+            }
+        }
+    };
+  ```
 
-  2.  Before we add the 3 functions, add one that will make a copy of the base statement, so when those 3 functions
+  3.  Before we add the 3 functions, add one that will make a copy of the base statement, so when those 3 functions
   start changing values, it doesn't change the base statement.  
   ``` javascript
   ...
@@ -200,7 +197,7 @@ to the myXAPI object to centralize those changes.
   ...
   ```  
 
-  3.  Next add `started`. It will accept the `starttime` so that the statement and the game stats are in sync. It will set the
+  4.  Next add `started`. It will accept the `starttime` so that the statement and the game stats are in sync. It will set the
   verb - `myxAPI.baseuri + "/verb/started"` - to the statement, along with the start time. It also
   generates a GUID for the new attempt. We can then save that in the context registration value, allowing us to link all of
   statements for this attempt.  
@@ -221,7 +218,7 @@ to the myXAPI object to centralize those changes.
   };
   ```  
 
-  4.  Now add `ended`. This will accept the stats object the game has maintained. Since the values of the stats object
+  5.  Now add `ended`. This will accept the stats object the game has maintained. Since the values of the stats object
   don't really fit in any property of a statement, we will use the result `extensions` property to store some of the stats.  
   ``` javascript  
   // after started
@@ -248,7 +245,7 @@ to the myXAPI object to centralize those changes.
   };
   ```  
 
-  5.  Finally add a `guessed` function. This accepts the number guessed and sends a statement to the LRS. Since this
+  6.  Finally add a `guessed` function. This accepts the number guessed and sends a statement to the LRS. Since this
   statement would say something like "player guessed a number" and not "player guessed guess the number game", we need
   to change the the object of the statement, along with adding the number to the result `response` and setting the verb
   to `myxAPI.baseuri + "/verb/guessed"`.  
@@ -277,8 +274,9 @@ to the myXAPI object to centralize those changes.
   };
   ```
 
-## Step 6 - Using myXAPI
+## Step 8 - Using myXAPI
 Now that everything is set up, it's time to call those helper functions during the game.  
+
   1.  Call `started` at the end of the `startGame` function in `game.html`.
   ``` javascript
   // local functions
@@ -336,23 +334,23 @@ Now that everything is set up, it's time to call those helper functions during t
   });
   ```  
 
-## Step 7 - Remove startGame  
+## Step 9 - Remove startGame  
 The last line of the game script is `startGame();`. This is no longer necessary becuase we call it in the launch script now. Remove it so we don't call startGame before we build the myXAPI object.  
 
-## Step 8 - Upload the game  
+## Step 10 - Upload the game  
 Launch doesn't require the game to be uploaded. This step is done as a convenience so we don't have to host our game on another server.  
   
 1. Copy `cmi5.xml` from `webcontent/final/packaged/` to `webcontent/`. xAPI Launch has limited support of cmi5's package specification to allow us to package up our game and import on the server. The xml file is already set up, no edits are needed.  
 2. Zip cmi5.xml, game.html, lib/, and xapiwrapper.min.js. Make sure not to zip the containing folder (webcontent), just the files and lib/ folder.  
 3. On the xAPI Launch server, login and under the Apps drop down select Upload App. Choose your zip and upload.  
 
-## Step 9 - Configure the App  
+## Step 11 - Configure the App  
 Before launching our game, we need to configure the launch settings to include our base URI so it can be passed to the game during the launch process.  
 1. Select the '...' button beside 'Launch' and choose 'Edit'.  
 2. Add `http://adlnet.gov/event/xapiworkshop/<<name>>` in the 'Custom Data' field.  
 3. Change 'Launch Type' to 'Popup'.
 
-## Step 10 - Try the game
+## Step 12 - Try the game
 Launch the game! The game should report your attempts to the ADL LRS [view here](http://adlnet.github.io/xapi-statement-viewer/).
 
 ## Bonus Challenges
