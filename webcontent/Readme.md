@@ -41,7 +41,7 @@ do the handshake with xAPI Launch and pass a configured object to the callback.
 
           console.log("--- content launched via xAPI Launch ---\n", ADL.XAPIWrapper.lrs, "\n", launchdata);
       } else {
-          alert("this can only be used by an xapi launch server");
+          alert("This was not initialized via xAPI Launch. Defaulting to hard-coded credentials");
 
           console.log("--- content not launched ---\n", ADL.XAPIWrapper.lrs);
       }
