@@ -184,7 +184,16 @@
                     "password": "password1234"
                 });
                 myXAPI.baseuri = "http://adlnet.gov/event/xapiworkshop/non-launch";
-                launchdata = {actor: {account:{homePage:"http://anon.ymo.us/server", name: "unknown-user"}, name: "unknown"}};
+                launchdata = {
+                    actor: {
+                        account:{
+                            homePage:"http://anon.ymo.us/server",
+                            name: "unknown-user"
+                        },
+                        name: "unknown"
+                    }
+                };
+
                 console.log("--- content not launched ---\n", ADL.XAPIWrapper.lrs);
             }
 
@@ -210,9 +219,7 @@
                         "grouping": [
                             {
                                 "id": myXAPI.baseuri + "/dev/web"
-                            }
-                        ],
-                        "category": [
+                            },
                             {
                                 "id": myXAPI.baseuri
                             }
