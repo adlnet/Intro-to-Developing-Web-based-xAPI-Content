@@ -15,9 +15,9 @@ The first step is to include the xAPIWrapper in the game HTML. The xAPIWrapper i
   1.  Add a `<script>` tag in the `<body>` of the `game.html` to include the xAPI Wrapper. (right below the game `<script>` tag)
   ``` html
   ...
-      handleResult(res, num);
-      return false;
-    });
+
+        // auto run on doc ready
+        startGame();
     </script>
 
     <script src="./lib/xapiwrapper.min.js"></script>
