@@ -12,18 +12,20 @@ LRS easier. Although this is a small tutorial it shows you how to:
 
 ## Step 1 - Include the xAPI Wrapper in Game.html  
 The first step is to include the xAPIWrapper in the game HTML. The xAPIWrapper is included in the `lib` folder of the project for your convenience. For reference, the xAPIWrapper project is at https://github.com/adlnet/xAPIWrapper.  
-  1.  Add a `<script>` tag in the `<body>` of the `game.html` to include the xAPI Wrapper. (right below the game `<script>` tag)
+  1.  Add a `<script>` tag in the `<body>` of the `game.html` to include the xAPI Wrapper. (right below the game `<script>` tag) And an opening and closing `<script>` tag where we will add the xAPI code.  
+  
   ``` html
   ...
 
-        // auto run on doc ready
-        startGame();
-    </script>
+          // auto run on doc ready
+          startGame();
+      </script>
 
-    <script src="./lib/xapiwrapper.min.js"></script>
-    <script>
-    </script>
-    ...
+      <script src="./lib/xapiwrapper.min.js"></script>
+      <script>
+      </script>
+    </body>
+  ...
   ```
 
 ## Step 2 - Configure the xAPI Wrapper  
