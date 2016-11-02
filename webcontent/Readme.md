@@ -77,6 +77,7 @@ to get a configured xAPIWrapper and additional launch data from the launch serve
   xAPI Launch server, allowing us to enter a base URI we can use for all places
   that need a URI. And the xAPIWrapper parameter holds a new xAPIWrapper instance that is configured with settings 
   from the launch server. Set the original `ADL.XAPIWrapper` to the configured one from the launch() method. And save the `launchdata.customData.content` value to a baseuri property on `myXAPI`. (we will configure this value on the launch server)  
+  
   ``` javascript
   ...
   var myXAPI = {};
@@ -94,6 +95,7 @@ because the content wasn't launched by the launch server. In this example we def
 additional processing or error handling could occur here.  
 
   1. Alert the user that this wasn't initialized through xAPI Launch and that we'll use default values.  
+  
   ``` javascript  
   ...
   } else {
@@ -101,6 +103,7 @@ additional processing or error handling could occur here.
   }
   ```  
   2. Change the configuration of the `ADL.XAPIWrapper` to hard-coded values.  
+  
   ``` javascript
     ...
     alert("This was not initialized via xAPI Launch. Defaulting to hard-coded credentials.");
@@ -111,10 +114,19 @@ additional processing or error handling could occur here.
     });
   ```  
   3. Set the baseuri value and the launchdata actor information.  
+  
   ``` javascript
   ...
      myXAPI.baseuri = "http://adlnet.gov/event/xapiworkshop/non-launch";
-     launchdata = {actor: {account:{homePage:"http://anon.ymo.us/server", name: "unknown-user"}, name: "unknown"}};
+     launchdata = {
+          actor: {
+              account:{
+                  homePage:"http://anon.ymo.us/server", 
+                  name: "unknown-user"
+              }, 
+              name: "unknown"
+          }
+      };
   }
   ```
 
@@ -175,9 +187,7 @@ to the myXAPI object to centralize those changes.
                 "grouping": [
                     {
                         "id": myXAPI.baseuri + "/dev/web"
-                    }
-                ],
-                "category": [
+                    },
                     {
                         "id": myXAPI.baseuri
                     }
