@@ -171,7 +171,8 @@ to the myXAPI object to centralize those changes.
   }
   ```  
   
-  2.  In the `buildMyXAPI` function first create a base statement with parts of a statement that don't change much. The `actor` property is set to the value we got from the launch server. The `object` is created with information about the game. We use `myXAPI.baseuri` that was initialized by the launch server to create the IRIs used within the content. And the `context` property is populated with `contextActivities` that allow us to tag these statements as coming from this xAPI Workshop. (Later we can use these values to retrieve only the statements from this workshop)  
+  2.  In the `buildMyXAPI` function first create a base statement with parts of a statement that don't change much. The `actor` property is set to the value we got from the launch server. The `object` is created with information about the game. We use `myXAPI.baseuri` that was initialized by the launch server to create the IRIs used within the content. And the `context` property is populated with `contextActivities` that allow us to tag these statements as coming from this xAPI Workshop.   
+  
   ``` javascript
   ...
   myXAPI.statement = {
