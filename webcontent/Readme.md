@@ -13,7 +13,7 @@ LRS easier. Although this is a small tutorial it shows you how to:
 ## Step 1 - Include the xAPI Wrapper in Game.html  
 The first step is to include the xAPIWrapper in the game HTML. The xAPIWrapper is included in the `lib` folder of the project for your convenience. For reference, the xAPIWrapper project is at https://github.com/adlnet/xAPIWrapper.  
   1.  Add a `<script>` tag in the `<body>` of the `game.html` to include the xAPI Wrapper. (right below the game `<script>` tag) And an opening and closing `<script>` tag where we will add the xAPI code.  
-  
+
   ``` html
   ...
 
@@ -47,7 +47,6 @@ do the handshake with xAPI Launch and pass a configured object to the callback.
 
           console.log("--- content not launched ---\n", ADL.XAPIWrapper.lrs);
       }
-      $('#endpoint').text(ADL.XAPIWrapper.lrs.endpoint);
   }, true);
   </script>
   ...  
@@ -62,24 +61,24 @@ create a `myXAPI` object that will contain a base statement and some helper func
   ``` javascript
   ...
   <script>
-  
+
   var myXAPI = {};
-  
+
   ADL.launch(function(err, launchdata, xAPIWrapper) {
   ...
   </script>
   ```  
 
 ## Step 4 - Initializing the content based on xAPI Launch data  
-The xAPI Wrapper has xAPI Launch functionality built in. By calling ADL.launch() with a callback function, we are able 
+The xAPI Wrapper has xAPI Launch functionality built in. By calling ADL.launch() with a callback function, we are able
 to get a configured xAPIWrapper and additional launch data from the launch server.  
 
-  1. xAPI Launch sends information (launch data) to the content, which the ADL.launch function sends to the callback. 
+  1. xAPI Launch sends information (launch data) to the content, which the ADL.launch function sends to the callback.
   The launchdata.customData object contains content that can be configured in the
   xAPI Launch server, allowing us to enter a base URI we can use for all places
-  that need a URI. And the xAPIWrapper parameter holds a new xAPIWrapper instance that is configured with settings 
+  that need a URI. And the xAPIWrapper parameter holds a new xAPIWrapper instance that is configured with settings
   from the launch server. Set the original `ADL.XAPIWrapper` to the configured one from the launch() method. And save the `launchdata.customData.content` value to a baseuri property on `myXAPI`. (we will configure this value on the launch server)  
-  
+
   ``` javascript
   ...
   var myXAPI = {};
@@ -90,14 +89,14 @@ to get a configured xAPIWrapper and additional launch data from the launch serve
       }
       ...
   ```
-  
+
 ## Step 5 - Adding the else block
-The else block is the case when an error occurred trying to talk to the launch server - typically this is 
-because the content wasn't launched by the launch server. In this example we default back to hard coded values, however 
+The else block is the case when an error occurred trying to talk to the launch server - typically this is
+because the content wasn't launched by the launch server. In this example we default back to hard coded values, however
 additional processing or error handling could occur here.  
 
   1. Alert the user that this wasn't initialized through xAPI Launch and that we'll use default values.  
-  
+
   ``` javascript  
   ...
   } else {
@@ -105,7 +104,7 @@ additional processing or error handling could occur here.
   }
   ```  
   2. Change the configuration of the `ADL.XAPIWrapper` to hard-coded values.  
-  
+
   ``` javascript
     ...
     alert("This was not initialized via xAPI Launch. Defaulting to hard-coded credentials.");
@@ -116,30 +115,30 @@ additional processing or error handling could occur here.
     });
   ```  
   3. Set the baseuri value and the launchdata actor information.  
-  
+
   ``` javascript
   ...
      myXAPI.baseuri = "http://adlnet.gov/event/xapiworkshop/non-launch";
      launchdata = {
           actor: {
               account:{
-                  homePage:"http://anon.ymo.us/server", 
+                  homePage:"http://anon.ymo.us/server",
                   name: "unknown-user"
-              }, 
+              },
               name: "unknown"
           }
       };
   }
   ```
 
-  
+
 ## Step 6 - Building the rest of the myXAPI object and callback function
 We add functions and a base statement to the myXAPI object to report when actions in
-the game take place. The following steps will go into the details of those
+the game take place. The following step will go into the details of those
 functions.   
 
   1.  At the end of the callback function, add two
-  function calls. `buildMyXAPI` takes the actor sent from the launch server 
+  function calls. `buildMyXAPI` takes the actor sent from the launch server
   and will create a base statement and the additional functions for the myAPI object.
   The second function will call the startGame process.  
 
@@ -149,14 +148,6 @@ functions.
         startGame();
   ...
   ```   
-  2. The last part writes the endpoint on the game page and closes the ADL.launch function.  
-    
-  ``` javascript  
-  ...
-        $('#endpoint').text(ADL.XAPIWrapper.lrs.endpoint);
-    }, true);
-  ...
-  ```
 
 
 ## Step 7 - Adding Helper Methods to myXAPI
@@ -170,7 +161,7 @@ to the myXAPI object to centralize those changes.
 
   }
   ```  
-  
+
   2.  In the `buildMyXAPI` function first create a base statement with parts of a statement that don't change much. The `actor` property is set to the value we got from the launch server. The `object` is created with information about the game. We use `myXAPI.baseuri` that was initialized by the launch server to create the IRIs used within the content. And the `context` property is populated with `contextActivities` that allow us to tag these statements as coming from this xAPI Workshop.   
   
   ``` javascript
@@ -352,7 +343,7 @@ The last line of the game script is `startGame();`. This is no longer necessary 
 
 ## Step 10 - Upload the game  
 Launch doesn't require the game to be uploaded. This step is done as a convenience so we don't have to host our game on another server.  
-  
+
 1. Copy `cmi5.xml` from `webcontent/final/packaged/` to `webcontent/`. xAPI Launch has limited support of cmi5's package specification to allow us to package up our game and import on the server. The xml file is already set up, no edits are needed.  
 2. Zip cmi5.xml, game.html, lib/, and xapiwrapper.min.js. Make sure not to zip the containing folder (webcontent), just the files and lib/ folder.  
 3. On the xAPI Launch server, login and under the Apps drop down select Upload App. Choose your zip and upload.  
