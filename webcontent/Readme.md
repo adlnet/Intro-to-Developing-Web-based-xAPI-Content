@@ -12,18 +12,20 @@ LRS easier. Although this is a small tutorial it shows you how to:
 
 ## Step 1 - Include the xAPI Wrapper in Game.html  
 The first step is to include the xAPIWrapper in the game HTML. The xAPIWrapper is included in the `lib` folder of the project for your convenience. For reference, the xAPIWrapper project is at https://github.com/adlnet/xAPIWrapper.  
-  1.  Add a `<script>` tag in the `<body>` of the `game.html` to include the xAPI Wrapper. (right below the game `<script>` tag)
+  1.  Add a `<script>` tag in the `<body>` of the `game.html` to include the xAPI Wrapper. (right below the game `<script>` tag) And an opening and closing `<script>` tag where we will add the xAPI code.  
+
   ``` html
   ...
 
-        // auto run on doc ready
-        startGame();
-    </script>
+          // auto run on doc ready
+          startGame();
+      </script>
 
-    <script src="./lib/xapiwrapper.min.js"></script>
-    <script>
-    </script>
-    ...
+      <script src="./lib/xapiwrapper.min.js"></script>
+      <script>
+      </script>
+    </body>
+  ...
   ```
 
 ## Step 2 - Configure the xAPI Wrapper  
@@ -160,7 +162,8 @@ to the myXAPI object to centralize those changes.
   }
   ```  
 
-  2.  In the `buildMyXAPI` function first create a base statement with parts of a statement that don't change much. The `actor` property is set to the value we got from the launch server. The `object` is created with information about the game. We use `myXAPI.baseuri` that was initialized by the launch server to create the IRIs used within the content. And the `context` property is populated with `contextActivities` that allow us to tag these statements as coming from this xAPI Workshop. (Later we can use these values to retrieve only the statements from this workshop)  
+  2.  In the `buildMyXAPI` function first create a base statement with parts of a statement that don't change much. The `actor` property is set to the value we got from the launch server. The `object` is created with information about the game. We use `myXAPI.baseuri` that was initialized by the launch server to create the IRIs used within the content. And the `context` property is populated with `contextActivities` that allow us to tag these statements as coming from this xAPI Workshop.   
+  
   ``` javascript
   ...
   myXAPI.statement = {
