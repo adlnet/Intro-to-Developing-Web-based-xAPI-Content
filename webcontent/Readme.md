@@ -8,8 +8,11 @@ LRS easier. Although this is a small tutorial it shows you how to:
   2.  configure the xAPI Wrapper using xAPI Launch with the LRS and client credentials,  
   3.  send statements to the LRS,  
   4.  include extensions in the statement, and  
-  5.  use registration and context activities to group statements, using xAPI Launch information.
+  5.  use registration and context activities to group statements, using xAPI Launch information.  
 
+> Note: The code for each step is already included and commented out in the game.html. If you wish, you can just uncomment the code as you walk through the steps.  
+
+  
 ## Step 1 - Include the xAPI Wrapper in Game.html  
 The first step is to include the xAPIWrapper in the game HTML. The xAPIWrapper is included in the `lib` folder of the project for your convenience. For reference, the xAPIWrapper project is at https://github.com/adlnet/xAPIWrapper.  
   1.  Add a `<script>` tag in the `<body>` of the `game.html` to include the xAPI Wrapper. (right below the game `<script>` tag) And an opening and closing `<script>` tag where we will add the xAPI code.  
@@ -243,7 +246,7 @@ The last line of the game script is `startGame();`. This is no longer necessary 
 Launch doesn't require the game to be uploaded. This step is done as a convenience so we don't have to host our game on another server.  
 
 1. Copy `cmi5.xml` from `webcontent/final/packaged/` to `webcontent/`. xAPI Launch has limited support of cmi5's package specification to allow us to package up our game and import on the server. The xml file is already set up, no edits are needed.  
-2. Zip cmi5.xml, game.html, lib/, and xapiwrapper.min.js. Make sure not to zip the containing folder (webcontent), just the files and lib/ folder.  
+2. Zip cmi5.xml, game.html, and lib/. Make sure not to zip the containing folder (webcontent), just the files and lib/ folder.  
 3. On the xAPI Launch server, login and under the Apps drop down select Upload App. Choose your zip and upload.  
 
 ## Step 11 - Configure the App  
