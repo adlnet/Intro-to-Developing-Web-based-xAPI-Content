@@ -23,21 +23,19 @@ Next you have to [configure the xAPI Wrapper](https://github.com/adlnet/xAPIWrap
 have xAPI Launch tell the content what configuration to use, instead of hardcoding
 the LRS and authentication details. By calling ADL.launch, the xAPIWrapper will
 do the handshake with xAPI Launch and pass a configured object to the callback.   
-  ``` html
-  ...
-  <script src="./lib/xapiwrapper.min.js"></script>
-  <script>
-  ADL.launch(function(err, launchdata, xAPIWrapper) {
-      if (!err) {
-          console.log("--- content launched via xAPI Launch ---\n", xAPIWrapper, "\n", launchdata);
-      } else {
-          alert("This was not initialized via xAPI Launch. Defaulting to hard-coded credentials");
 
-          console.log("--- content not launched ---\n", ADL.XAPIWrapper.lrs);
-      }
-  }, true);
-  </script>
-  ...  
+  ``` html
+    <script>
+        ADL.launch(function(err, launchdata, xAPIWrapper) {
+            if (!err) {
+                console.log("--- content launched via xAPI Launch ---\n", xAPIWrapper, "\n", launchdata);
+            } else {
+                alert("This was not initialized via xAPI Launch. Defaulting to hard-coded credentials");
+
+                console.log("--- content not launched ---\n", ADL.XAPIWrapper.lrs);
+            }
+        }, true);
+    </script>
   ```  
 
 ## Step 3 - Creating myXAPI
@@ -233,7 +231,7 @@ Now that everything is set up, it's time to call those helper functions during t
   ```  
 
   3. Call `guessed` in the try/catch in the form submit event after `var res = thegame.evalGuess(num)`.  
-  
+
   ``` javascript
       myXAPI.guessed(num);
   ```  
