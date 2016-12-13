@@ -10,7 +10,7 @@ LRS easier. Although this is a small tutorial it shows you how to:
   4.  include extensions in the statement, and  
   5.  use registration and context activities to group statements, using xAPI Launch information.  
 
-> Note: The code for each step is already included and commented out in the game.html. If you wish, you can just uncomment the code as you walk through the steps.
+> Note: The code for each step is already included and commented out in the game.html. If you wish, you can just uncomment the code as you walk through the steps.<br>
   These examples use verbs defined specifically for the workshops. This is done to isolate the statements. ADL recommends looking for existing verbs and vocabularies to leverage before creating your own.
 
   
