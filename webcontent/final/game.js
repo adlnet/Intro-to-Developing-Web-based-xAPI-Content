@@ -1,117 +1,79 @@
-        var thegame = new game(),
-        	won = false,
-        	help_messages = [
-        	{
-        		text: "Higher",
-        		class: "has-error"
-        	},
-        	{
-        		text: "Winner!",
-        		class: "has-success"
-        	},
-        	{
-        		text: "Lower",
-        		class: "has-error"
-        	}];
-        thegame.events = {};
-        thegame.on =function(event,handler)
+ function Question(questionText,answers,correctIndex)
+ {
+     this.questionText = questionText;
+     this.answers = answers;
+     this.correctIndex = correctIndex;  
+ }
+
+function exportController(scope)
+{
+    window.getQuizController = function(){
+        return scope;
+    }
+}
+
+var app = angular.module("quiz", ['ngAnimate']);
+
+app.controller("quizController", function($scope) {
+   
+        self = $scope;
+        exportController(self);
+     	self.events = {};
+        self.questions = [
+            new Question("What is your name",[
+                "Rob","Tom", "Rob Tomas"],2),
+            new Question("What is your favorite color",[
+                "Red","Blue", "Red. No I mean blue!?"],2),
+            new Question("What is the airspeed of an unladden swallow",[
+                "42 m/hr","42 k/hr", "What do you mean, an african or european swallow?"],2)
+        ]
+        self.activeQuestion = 0;
+        self.quizSubmitted = false;
+        self.started = false;
+
+     	self.on = function( event, handler )
+     	{
+     		this.events[ event ] = handler;
+     	}
+     	self.raise = function( event )
+     	{
+           
+            var args = [];
+            for(var i =1; i < arguments.length; i++)
+                args.push(arguments[i]);
+     		if ( this.events[ event ] )
+     			this.events[ event ].apply(null,args)
+     	}
+     		// local functions
+     	self.startQuiz =function(  )
+     	{
+     		this.raise( "started", new Date() );
+            this.started = true;
+     	}
+        self.nextQuestion = function()
         {
-            thegame.events[event] = handler;
+        
+            var question = this.questions[this.activeQuestion].questionText;
+            var answer = this.questions[this.activeQuestion].answers[this.answerIndex]
+            var success = this.answerIndex == this.questions[this.activeQuestion].correctIndex;
+
+            this.questions[this.activeQuestion].success = success;
+
+            this.raise( "answered", this.activeQuestion, question,answer,success );
+
+            this.answerIndex = -1;
+            if(this.activeQuestion < this.questions.length-1)
+                this.activeQuestion += 1;
+            else
+            {
+                var totalCorrect = this.questions.filter(function(e){return e.success}).length;
+
+                this.raise( "finished", totalCorrect, this.questions.length);   
+                this.quizSubmitted = true;             
+            }
         }
-        thegame.raise = function(event,arg)
-        {
-            if(thegame.events[event])
-                thegame.events[event](arg);
-        }
-        // local functions
-        function startGame(event)
-        {
-        	$('#start-btn').attr("disabled", true);
-        	$('#start-btn').removeClass('btn-warning').addClass('btn-default')
-        	thegame.start();
-        	resetInput();
-        	hideStats();
-        	$('#number-range').html(thegame.range);
-        	$('#number-guess').attr('min', thegame.stats.min);
-        	$('#number-guess').attr('max', thegame.stats.max);
-        	$('#number-guess').removeAttr('readonly');
-        	$('#number-guess').focus();
-        	won = false;
-
-        	
-            thegame.raise("started",thegame.stats.startedAt);
-
-        }
-
-        function handleResult(result, number)
-        {
-        	var jq_help = $('#number-help');
-        	jq_help.html(help_messages[result + 1].text + " (you guessed " + number + ")");
-        	$('#number-group').addClass(help_messages[result + 1].class);
-        	if (result == 0)
-        	{
-        		$('#number-guess').attr('readonly', 'true');
-        		$('#start-btn').attr("disabled", false);
-        		$('#start-btn').removeClass('btn-default').addClass('btn-warning');
-        		won = true;
-        		thegame.end();
-        		showStats();
-
-                thegame.raise("ended",thegame.stats);
-
-        		alert('You won');
-        	}
-        }
-
-        function resetInput()
-        {
-        	$('#number-group').removeClass(help_messages[0].class + " " + help_messages[1].class);
-        	$('#number-guess').val('');
-        	$('#number-help').html('');
-        }
-
-        function showStats()
-        {
-        	var dur = moment.duration(thegame.stats.endedAt - thegame.stats.startedAt);
-        	$('#stats-number').html(thegame.stats.number);
-        	$('#stats-range').html(thegame.range);
-        	$('#stats-guesses').html(thegame.stats.guesses.length + "  (" + thegame.stats.guesses + ")");
-        	$('#stats-duration').html(dur.humanize() + "  (" + dur.toJSON() + ")");
-        	$('#stats-row').show();
-        }
-
-        function hideStats()
-        {
-        	$('#stats-row').hide();
-        	$('#stats-number').html('');
-        	$('#stats-range').html('');
-        	$('#stats-guesses').html('');
-        	$('#stats-duration').html('');
-        }
-
-        // set events
-        $('#start-btn').on('click', startGame);
-
-        $('#number-form').submit(function(event)
-        {
-        	var num = parseInt(event.target['number-guess'].value);
-        	try
-        	{
-        		var res = thegame.evalGuess(num);
-
-                thegame.raise("guessed",num);
-
-        	}
-        	catch (e)
-        	{
-        		// if error, game is over, start again
-        		startGame();
-        		return false;
-        	}
-        	if (won) return false;
-        	resetInput();
-        	handleResult(res, num);
-        	return false;
-        });
-
-      
+     	self.setAnswer=function( answerIndex )
+     	{
+     		this.answerIndex = answerIndex;
+     	}   
+});
