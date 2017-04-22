@@ -11,7 +11,7 @@ ADL.launch( function( err, launchdata, xAPIWrapper )
 	else
 	{
 
-		alert( "This was not initialized via xAPI Launch. Defaulting to hard-coded credentials" );
+		console.log( "This was not initialized via xAPI Launch. Defaulting to hard-coded credentials" );
 
         ADL.XAPIWrapper.changeConfig(
         {
@@ -39,6 +39,7 @@ function initialize( xAPIWrapper, myactor, baseuri )
 {
 
 	var theQuiz = window.getQuizController();
+    theQuiz.setActor(myactor);
 
 	var statement_base = {
 		actor: myactor,

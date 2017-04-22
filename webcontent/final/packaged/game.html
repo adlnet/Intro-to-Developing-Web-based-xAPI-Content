@@ -1,96 +1,296 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Guess the Number</title>
-
     <!-- jquery to support bootstrap and for general dom manipulation -->
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
-
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-
     <!-- moment.js for date / time -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.0/angular.min.js"></script>
+    <script data-require="angular-animate@*" data-semver="1.2.13" src="http://code.angularjs.org/1.6.0/angular-animate.js"></script>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <style type="text/css">
+    .question {
+        font-size: 30px;
+        font-style: italic;
+    }
+    
+    .answer {
+        font-size: 25px;
+        padding: 10px;
+        border-radius: 6px;
+    }
+    
+    .selected {
+        background: lightgray
+    }
+    
+    input[type=checkbox],
+    input[type=radio] {
+        margin-right: 1em;
+    }
+    
+    .container {
+        margin-top: 4em;
+        background: rgb(248, 249, 251);
+        box-shadow: 10px 10px 10px rgba(0, 0, 0, .1), 0px 0px 10px rgba(0, 0, 0, .1);
+        ;
+        padding: 2em;
+        border-radius: 3px;
+    }
+    
+    .navbar-default {
+        background: #31a99e;
+        background-repeat: repeat-x;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 5px rgba(0, 0, 0, .075);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 5px rgba(0, 0, 0, .075);
+        color: white;
+    }
+    
+    .navbar-default .navbar-nav>li>a:focus,
+    .navbar-default .navbar-nav>li>a:hover {
+        color: white
+    }
+    
+    .navbar-default .navbar-nav>li>a:focus,
+    .navbar-default .navbar-nav>li>a {
+        color: white
+    }
+    
+    .navbar-default .navbar-brand:focus,
+    .navbar-default .navbar-brand:hover {
+        color: white;
+        background-color: transparent;
+    }
+    
+    .navbar-default .navbar-brand:focus,
+    .navbar-default .navbar-brand {
+        color: white;
+        background-color: transparent;
+    }
+    
+    .navbar-default .form-control {
+        display: inline-block;
+        width: auto;
+        vertical-align: middle;
+        color: white;
+    }
+    
+    .bottom-tray {
+        border-top: 1px solid #e4e4e4;
+        padding-top: 2em;
+    }
+    
+    h1 {
+        padding-bottom: 1em;
+        text-align: center;
+        font-weight: bolder;
+        font-family: sans-serif;
+    }
+    
+    .course {
+        padding: 1em;
+    }
+    
+    .course-current {
+        background: #f3f3f3;
+        border-top: 1px solid #c5c5c5;
+        border-bottom: 1px solid #c5c5c5;
+    }
+    
+    .course-intro {
+        padding: 1em;
+        border-bottom: 1px solid #c5c5c5;
+    }
+    
+    .course-intro h3 {
+        font-size: 15px;
+        font-weight: bold;
+        color: #31a99e;
+        text-transform: uppercase;
+    }
+    
+    .course-list {
+        border-right: 1px solid #c5c5c5;
+        margin-right: 0px;
+        padding-right: 0px;
+    }
+    
+    .course .glyphicon {
+        font-size: 26px;
+        color: : #31a99e;
+        padding: 10px;
+        width: 20%;
+        height: 50px;
+    }
+    
+    .course p {
+        display: inline-block;
+        width: 73%;
+    }
+    
+    .btn-primary {
+        color: #fff;
+        background-color: #31a99e;
+        border: none;
+        padding: 10px;
+        background-image: none;
+    }
+    
+    .course-intro h4 {}
+    </style>
 </head>
-<body>
-    <div class="container">
-        <h2>Guess the Number</h2>
-        <div class="row">
-            <div class="col-sm-6">
-                <form class="form" id="number-form">
-                    <div class="form-group" id="number-group">
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <label for="number-guess">Guess a number between <span id="number-range"></span></label>
+
+<body ng-app="quiz" ng-controller="quizController">
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="#"><b>ADL</b>Academy</a>
+                    </div>
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Subjects <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Not implemented!</a></li>
+                                    <li><a href="#">Not implemented!</a></li>
+                                    <li><a href="#">Not implemented!</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="#">Not implemented!</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="#">Not implemented!</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <form class="navbar-form navbar-left">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search">
                             </div>
-                            <div class="col-xs-12">
-                                <div class="input-group">
-                                    <span class="input-group-btn">
-                                        <button id="guess-btn" class="btn btn-info" type="submit">Guess</button>
-                                    </span>
-                                    <input type="number" class="form-control" id="number-guess" aria-describedby="number-help" required>
+                        </form>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="#">{{actor.name}}</a></li>
+                        </ul>
+                    </div>
+                    <!-- /.navbar-collapse -->
+                </div>
+                <!-- /.container-fluid -->
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+    </nav>
+    <div class="row">
+        <div class="col-md-2 course-list">
+            <div class="course-intro">
+                <h3>ADL Labs / Cybersecurity</h3>
+                <h4>Cybersecurity</h4> </div>
+            <div class="course"><span class="glyphicon glyphicon-tags"></span>
+                <p>Into to Cybersecurity 101</p>
+            </div>
+            <div class="course course-current"><span class="glyphicon glyphicon-tags"></span>
+                <p>Practice: Cybersecurity 101 quiz</p>
+            </div>
+            <div class="course"><span class="glyphicon glyphicon-tags"></span>
+                <p>The secret lives of hackers</p>
+            </div>
+            <div class="course"><span class="glyphicon glyphicon-tags"></span>
+                <p>Practice: The secret lives of hackers quiz</p>
+            </div>
+            <div class="course"><span class="glyphicon glyphicon-tags"></span>
+                <p>A cyber privacy parable</p>
+            </div>
+            <div class="course"><span class="glyphicon glyphicon-tags"></span>
+                <p>Practice: A cyber privacy parable exercise</p>
+            </div>
+            <div class="course"><span class="glyphicon glyphicon-tags"></span>
+                <p>Cyber Codes</p>
+            </div>
+            <div class="course"><span class="glyphicon glyphicon-tags"></span>
+                <p>Practice: Cyber Codes quiz</p>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <div class="row">
+                <h1> Cybersecurity Quiz 1 </h1>
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <div class="row" style="">
+                        <div>
+                            <div class="col-md-12" ng-show="!quizSubmitted && started">
+                                <div ng-repeat="x in questions">
+                                    <div class="row " ng-show="{{$index}} == $parent.activeQuestion" ng-animate="'animate'">
+                                        <p class="question">
+                                            {{x.questionText}}
+                                        </p>
+                                        <form action="">
+                                            <div class="answer" ng-click="$parent.$parent.setAnswer($index)" ng-class="{selected:$parent.$parent.answerIndex == $index}" ng-repeat="answer in x.answers">
+                                                <input ng-checked="$parent.$parent.answerIndex == $index" type="radio" name="question"></input>
+                                                {{"ABCD"[$index]}}: {{answer}}
+                                                <br>
+                                            </div>
+                                        </form>
+                                        <br>
+                                        <div class="bottom-tray">
+                                            <button class="btn btn-primary" ng-show="$index != questions.length-1" ng-click="$parent.nextQuestion()">Next Question</button>
+                                            <button class="btn btn-primary" ng-show="$index == questions.length-1" ng-click="$parent.nextQuestion()">Submit Answers</button>
+                                            <div style="float:right">Question {{$index + 1}} of {{$parent.questions.length}}</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-xs-12">
-                                <span id="number-help" class="help-block"></span>
+                            <div class="col-md-12" ng-show="quizSubmitted  && started">
+                                Quiz complete! You answered {{stats.correct}} out of {{questions.length}} correct. Close this window to return.
+                            </div>
+                            <div class="col-md-12" ng-show="!started">
+                                <p>
+                                    Hi {{actor.name}}
+                                </p>
+                                <button class="btn btn-primary" ng-show="$index != questions.length-1" ng-click="startQuiz()">Begin Quiz</button>
                             </div>
                         </div>
                     </div>
-                </form>
-                <button id="start-btn" type="button" class="btn btn-warning">New Game</button>
-            </div>
-        </div>
-        <div class="row" id="stats-row" style="margin-top:2em;">
-            <div class="col-sm-6">
-                <table class="table table-condensed">
-                    <tbody>
-                        <tr>
-                            <th scope="row">Number</th>
-                            <td id="stats-number"></td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Guesses</th>
-                            <td id="stats-guesses"></td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Duration</th>
-                            <td id="stats-duration"></td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Range</th>
-                            <td id="stats-range"></td>
-                        </tr>
-                    </tbody>
-                </table>
+                </div>
+                <div class="col-md-2"></div>
             </div>
         </div>
     </div>
-    <script src="lib/guess-number.js"></script>
-
+    </div>
     <script src="./game.js"></script>
-
     <script src="./lib/xapiwrapper.min.js"></script>
-  
     <script src="./xapiIntegration.js"></script>
-
-   
-  
-    
+    <footer class="footer">
+        <div>
+            <p class="text-muted">
+                <br> http://www.doc.ic.ac.uk/~nd/surprise_95/journal/vol3/bk2/test.html
+            </p>
+        </div>
+    </footer>
 </body>
+
 </html>

@@ -1,32 +1,26 @@
- var myXAPI = {};
 
- //step 5
- 
- //buildMyXAPI(launchdata.actor);
- startGame();
+//Launch snip
 
- function buildMyXAPI(myactor)
- {
+function initialize( xAPIWrapper, myactor, baseuri )
+{
 
- 	// -- step 7.2 --
+	var theQuiz = window.getQuizController();
+    
+    //statement base and attempt uuid
 
- 	myXAPI.getBase = function()
- 	{
- 		return JSON.parse(JSON.stringify(this.statement));
- 	};
+	theQuiz.on( "started", function( starttime )
+	{
 
- 	myXAPI.started = function(starttime)
- 	{
- 		//7.4
- 	};
+		//started
 
- 	myXAPI.ended = function(stats)
- 	{
- 		// -- step 7.5 --
- 	};
+	} )
+	theQuiz.on( "answered", function( questionNumber, questionText, answerText, result )
+	{
+		//answered
 
- 	myXAPI.guessed = function(num)
- 	{
- 		// -- step 7.6 --
- 	};
- }
+	} )
+	theQuiz.on( "ended", function( stats )
+	{
+		//ended
+	} )
+}
