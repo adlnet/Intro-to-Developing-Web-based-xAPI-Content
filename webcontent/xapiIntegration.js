@@ -1,7 +1,7 @@
 
 //Launch snip
 
-function initialize( xAPIWrapper, myactor, baseuri )
+function initialize( XAPIWrapper, myactor, baseuri )
 {
 
 	var theQuiz = window.getQuizController();

@@ -13,12 +13,12 @@
   </course>
   <au id="http://course-repository.example.edu/identifiers/courses/02baafcf/aus/4c07">
     <title>
-      <langstring lang="en-US">Guess a Number</langstring>
+      <langstring lang="en-US">Cybersecurity 101</langstring>
     </title>
     <description>
       <langstring lang="en-US">
-        This game uses xAPI to track the start and stop as well as the player's
-        guesses.
+        This example quiz uses xAPI to track the start and stop as well as the learner's
+        answers.
       </langstring>
     </description>
     <url>./quiz.html</url>

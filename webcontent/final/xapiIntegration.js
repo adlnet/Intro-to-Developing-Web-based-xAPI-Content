@@ -35,7 +35,7 @@ ADL.launch( function( err, launchdata, xAPIWrapper )
 	}
 }, true );
 
-function initialize( xAPIWrapper, myactor, baseuri )
+function initialize( XAPIWrapper, myactor, baseuri )
 {
 
 	var theQuiz = window.getQuizController();
@@ -94,7 +94,7 @@ function initialize( xAPIWrapper, myactor, baseuri )
 		};
 		stmt.timestamp = starttime.toISOString();
 		stmt.context.registration = attemptGUID;
-		ADL.XAPIWrapper.sendStatement( stmt, function( resp )
+		XAPIWrapper.sendStatement( stmt, function( resp )
 		{
 			console.log( resp.status + " - statement id: " + resp.response );
 		} );
@@ -132,7 +132,7 @@ function initialize( xAPIWrapper, myactor, baseuri )
 			response: answerText,
             success:result
 		};
-		ADL.XAPIWrapper.sendStatement( stmt, function( resp )
+		XAPIWrapper.sendStatement( stmt, function( resp )
 		{
 			console.log( resp.status + " - statement id: " + resp.response );
 		} );
@@ -162,7 +162,7 @@ function initialize( xAPIWrapper, myactor, baseuri )
 		stmt.result.extensions[ baseuri + "/guess-the-number/ext/startedAt" ] = stats.startedAt.toISOString();
 		stmt.result.extensions[ baseuri + "/guess-the-number/ext/endedAt" ] = stats.endedAt.toISOString();
 
-		ADL.XAPIWrapper.sendStatement( stmt, function( resp )
+		XAPIWrapper.sendStatement( stmt, function( resp )
 		{
 			console.log( resp.status + " - statement id: " + resp.response );
 		} );

@@ -99,7 +99,7 @@ attemptGUID = ADL.ruuid();
         };
         stmt.timestamp = starttime.toISOString();
         stmt.context.registration = attemptGUID;
-        ADL.XAPIWrapper.sendStatement( stmt, function( resp )
+        XAPIWrapper.sendStatement( stmt, function( resp )
         {
             console.log( resp.status + " - statement id: " + resp.response );
         } );
@@ -138,7 +138,7 @@ var stmt = getBaseStatement();
             response: answerText,
             success:result
         };
-        ADL.XAPIWrapper.sendStatement( stmt, function( resp )
+        XAPIWrapper.sendStatement( stmt, function( resp )
         {
             console.log( resp.status + " - statement id: " + resp.response );
         } );
@@ -169,7 +169,7 @@ var stmt = getBaseStatement();
         stmt.result.extensions[ baseuri + "/guess-the-number/ext/startedAt" ] = stats.startedAt.toISOString();
         stmt.result.extensions[ baseuri + "/guess-the-number/ext/endedAt" ] = stats.endedAt.toISOString();
 
-        ADL.XAPIWrapper.sendStatement( stmt, function( resp )
+        XAPIWrapper.sendStatement( stmt, function( resp )
         {
             console.log( resp.status + " - statement id: " + resp.response );
         } );
